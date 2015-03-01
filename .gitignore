@@ -1,0 +1,6 @@
+*.o
+*.bin
+build/
+build.sh
+run.sh
+hda.img
