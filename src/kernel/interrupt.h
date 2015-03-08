@@ -2,7 +2,8 @@
 #define _INTERRUPT_H
 #include <stdint.h>
 
-typedef struct {
+typedef struct
+{
     uint16_t offset_low;
     uint16_t selector;
     uint8_t zero;
@@ -10,12 +11,14 @@ typedef struct {
     uint16_t offset_high;
 } __attribute__((packed)) idt_descriptor;
 
-typedef struct {
+typedef struct
+{
     uint16_t limit;
     uint32_t base;
 } __attribute__((packed)) idt_ptr;
 
-typedef struct {
+typedef struct
+{
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax,
              int_no, err_code, eip, cs,
              eflags, useresp, ss;

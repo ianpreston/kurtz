@@ -113,10 +113,10 @@ void print_hex(int c)
     print("0x");
     for (int i = 7; i >= 0; i--)
     {
-        unsigned int divisor = pow(16, i);
-        unsigned int mask = pow(16, i+1) - divisor;
+        uint32_t divisor = pow(16, i);
+        uint32_t mask = pow(16, i+1) - divisor;
 
-        unsigned int bits = (c & mask) / divisor;
+        uint32_t bits = (c & mask) / divisor;
         switch (bits) {
             case 0 : put_char('0'); break;
             case 1 : put_char('1'); break;
