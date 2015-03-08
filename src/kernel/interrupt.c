@@ -80,6 +80,7 @@ void init_interrupts()
     init_idt();
 
     asm volatile ("sti");
+    print_sys("Enabled interrupts\n");
 }
 
 void reset_pic()
