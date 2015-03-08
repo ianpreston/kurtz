@@ -14,7 +14,7 @@ read_disk:
     mov ch, 0x0 ; Cylinder
     mov dh, 0x0 ; Head
     mov cl, 0x2 ; Sector
-    mov al, 0x8 ; Sectors to read
+    mov al, 0x20 ; Sectors to read
 
     ; Interrupt to read from disk
     int 0x13
