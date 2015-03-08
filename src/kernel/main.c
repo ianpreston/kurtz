@@ -2,6 +2,7 @@
 #include "libkernel.h"
 #include "terminal.h"
 #include "interrupt.h"
+#include "paging.h"
 
 
 void init_pit_timer()
@@ -15,13 +16,25 @@ void init_pit_timer()
 int main()
 {
     init_terminal();
-    init_interrupts();
 
+    init_paging();
+
+    init_interrupts();
     init_pit_timer();
 
-    print_sys("Boot-up seems to have been successful...\n");
-    print_sys("Welcome to Kernel Kurtz v0.0.0\n");
+    print_sys("Booted Kernel Kurtz v0.0.0!\n\n");
+
+    print("Interrupt test...\n");
     asm volatile ("int $0xF1");
+
+    print("Virtual memory test...\n");
+    vmem_alloc(0xA1BEEF);
+    *(uint8_t*)(0xA1BEEF) = ':';
+    *(uint8_t*)(0xA1BEF0) = 'D';
+    put_char(*(uint8_t*)(0xA1BEEF));
+    put_char(*(uint8_t*)(0xA1BEF0));
+    vmem_free(0xA1BEEF);
+    print("\n");
 
     return 0;
 }
