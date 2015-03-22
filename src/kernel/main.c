@@ -3,6 +3,7 @@
 #include "terminal.h"
 #include "interrupt.h"
 #include "paging.h"
+#include "kheap.h"
 
 
 void init_pit_timer()
@@ -18,6 +19,7 @@ int main()
     init_terminal();
 
     init_paging();
+    init_kheap();
 
     init_interrupts();
     init_pit_timer();
@@ -27,14 +29,22 @@ int main()
     print("Interrupt test...\n");
     asm volatile ("int $0xF1");
 
-    print("Virtual memory test...\n");
-    vmem_alloc(0xA1BEEF);
-    *(uint8_t*)(0xA1BEEF) = ':';
-    *(uint8_t*)(0xA1BEF0) = 'D';
-    put_char(*(uint8_t*)(0xA1BEEF));
-    put_char(*(uint8_t*)(0xA1BEF0));
-    vmem_free(0xA1BEEF);
+    print("kmalloc() test...\n");
+    void *ptr0 = kmalloc(31);
+    print_hex(ptr0);
+    print(" ");
+
+    void *ptr1 = kmalloc(8);
+    print_hex(ptr1);
+    print(" ");
+
+    kfree(ptr1);
+    kfree(ptr0);
+
+    void *ptr2 = kmalloc(128);
+    print_hex(ptr2);
     print("\n");
+    kfree(ptr2);
 
     return 0;
 }

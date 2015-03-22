@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "libkernel.h"
 
+#define PAGE_SIZE 4096
+
 #define DIR_TABLE_PTR(table_idx) ((page_table_t*)(table_idx & 0xFFFFF000))
 #define PAGE_PHYSICAL_ADDR(x) ((uint32_t)(x & 0xFFFFF000))
 
