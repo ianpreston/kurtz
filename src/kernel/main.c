@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "libkernel.h"
+#include "gdt.h"
 #include "terminal.h"
 #include "interrupt.h"
 #include "paging.h"
@@ -16,10 +17,12 @@ void init_pit_timer()
 
 int main()
 {
-    init_terminal();
+    init_gdt();
 
     init_paging();
     init_kheap();
+
+    init_terminal();
 
     init_interrupts();
     init_pit_timer();
