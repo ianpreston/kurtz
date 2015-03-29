@@ -58,12 +58,12 @@ void kernel_irq(registers_t r)
     outb(0x20, 0x20);
 }
 
-static void set_idt_entry(int interrupt_num, uint32_t addr)
+static void set_idt_entry(int interrupt_num, uint32_t addr, uint8_t attributes)
 {
     interrupt_table[interrupt_num] = (idt_descriptor){
         .selector = 0x8,
         .zero = 0x0,
-        .attributes = 0x8E,
+        .attributes = attributes,
         .offset_low = addr & 0xFFFF,
         .offset_high = (addr >> 16) & 0xFFFF,
     };
@@ -107,37 +107,37 @@ void init_idt()
     // entries with specific ISRs.
     for (int i=0; i<256; i++)
     {
-        set_idt_entry(i, (uint32_t)isr_241);
+        set_idt_entry(i, (uint32_t)isr_241, 0x0);
     }
 
     // x86 Exceptions
-    set_idt_entry(0x0, (uint32_t)isr_0);
-    set_idt_entry(0x1, (uint32_t)isr_1);
-    set_idt_entry(0x2, (uint32_t)isr_2);
-    set_idt_entry(0x3, (uint32_t)isr_3);
-    set_idt_entry(0x4, (uint32_t)isr_4);
-    set_idt_entry(0x5, (uint32_t)isr_5);
-    set_idt_entry(0x6, (uint32_t)isr_6);
-    set_idt_entry(0x7, (uint32_t)isr_7);
-    set_idt_entry(0x8, (uint32_t)isr_8);
-    set_idt_entry(0x9, (uint32_t)isr_9);
-    set_idt_entry(0xA, (uint32_t)isr_10);
-    set_idt_entry(0xB, (uint32_t)isr_11);
-    set_idt_entry(0xC, (uint32_t)isr_12);
-    set_idt_entry(0xD, (uint32_t)isr_13);
-    set_idt_entry(0xE, (uint32_t)isr_14);
-    set_idt_entry(0xF, (uint32_t)isr_15);
-    set_idt_entry(0x10, (uint32_t)isr_16);
-    set_idt_entry(0x11, (uint32_t)isr_17);
-    set_idt_entry(0x12, (uint32_t)isr_18);
+    set_idt_entry(0x0, (uint32_t)isr_0, 0x8E);
+    set_idt_entry(0x1, (uint32_t)isr_1, 0x8E);
+    set_idt_entry(0x2, (uint32_t)isr_2, 0x8E);
+    set_idt_entry(0x3, (uint32_t)isr_3, 0x8E);
+    set_idt_entry(0x4, (uint32_t)isr_4, 0x8E);
+    set_idt_entry(0x5, (uint32_t)isr_5, 0x8E);
+    set_idt_entry(0x6, (uint32_t)isr_6, 0x8E);
+    set_idt_entry(0x7, (uint32_t)isr_7, 0x8E);
+    set_idt_entry(0x8, (uint32_t)isr_8, 0x8E);
+    set_idt_entry(0x9, (uint32_t)isr_9, 0x8E);
+    set_idt_entry(0xA, (uint32_t)isr_10, 0x8E);
+    set_idt_entry(0xB, (uint32_t)isr_11, 0x8E);
+    set_idt_entry(0xC, (uint32_t)isr_12, 0x8E);
+    set_idt_entry(0xD, (uint32_t)isr_13, 0x8E);
+    set_idt_entry(0xE, (uint32_t)isr_14, 0x8E);
+    set_idt_entry(0xF, (uint32_t)isr_15, 0x8E);
+    set_idt_entry(0x10, (uint32_t)isr_16, 0x8E);
+    set_idt_entry(0x11, (uint32_t)isr_17, 0x8E);
+    set_idt_entry(0x12, (uint32_t)isr_18, 0x8E);
 
     // Use 0xF1 for syscalls; totally arbitrary
-    set_idt_entry(0xF1, (uint32_t)isr_241);
+    set_idt_entry(0xF1, (uint32_t)isr_241, 0xEE);
 
     // IRQ ISRs
-    set_idt_entry(0x20, (uint32_t)irq_0);
-    set_idt_entry(0x21, (uint32_t)irq_1);
-    set_idt_entry(0x28, (uint32_t)irq_15);
+    set_idt_entry(0x20, (uint32_t)irq_0, 0x8E);
+    set_idt_entry(0x21, (uint32_t)irq_1, 0x8E);
+    set_idt_entry(0x28, (uint32_t)irq_15, 0x8E);
 
     interrupt_ptr.limit = sizeof(idt_descriptor)*256 - 1;
     interrupt_ptr.base = &interrupt_table;
