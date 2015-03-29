@@ -67,7 +67,7 @@ uint32_t vmem_alloc(uint32_t v_addr)
     uint32_t p_addr = pmem_alloc();
 
     // Set this page entry
-    table->pages[page_idx] = p_addr | 0x3;
+    table->pages[page_idx] = p_addr | 0x7;
 
     return v_addr;
 }
@@ -97,7 +97,7 @@ page_table_t* vmem_create_table(uint32_t table_idx)
     page_table_t *table = (page_table_t*)pmem_alloc();
 
     // Map the table into the directory
-    kernel_dir->tables[table_idx] = (uint32_t)(table) | 0x3;
+    kernel_dir->tables[table_idx] = (uint32_t)(table) | 0x7;
 
     // Get the virtual address of the table itself (not its entry in
     // the directory) so it can be manipulated.
@@ -139,7 +139,7 @@ void init_kernel_dir()
     // Since the directory itself is a table, directory entries will be
     // treated as table entries and therefore mapped into virtual
     // memory automagically.
-    kernel_dir->tables[1023] = (uint32_t)kernel_dir | 0x3;
+    kernel_dir->tables[1023] = (uint32_t)kernel_dir | 0x7;
 }
 
 void init_identity_paging()
@@ -147,9 +147,9 @@ void init_identity_paging()
     page_table_t *ident_table = (page_table_t*)pmem_alloc();
     for (int i = 0; i < 1024; i++)
     {
-        ident_table->pages[i] = (i * 0x1000) | 0x3;
+        ident_table->pages[i] = (i * 0x1000) | 0x7;
     }
-    kernel_dir->tables[0] = (uint32_t)(ident_table) | 0x3;
+    kernel_dir->tables[0] = (uint32_t)(ident_table) | 0x7;
 }
 
 void enable_paging()
