@@ -55,7 +55,7 @@ typedef struct {
 
 void init_gdt();
 
-extern void enter_usermode();
+extern void crunchatize_me_capn();
 
 void make_gdt_segment(gdt_entry_t *entry, bool code, bool kernel);
 void make_gdt_tss(gdt_entry_t *entry, tss_entry_t* tss);

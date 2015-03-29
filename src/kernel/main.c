@@ -29,9 +29,6 @@ int main()
 
     print_sys("Booted Kernel Kurtz v0.0.0!\n\n");
 
-    print("Interrupt test...\n");
-    asm volatile ("int $0xF1");
-
     print("kmalloc() test...\n");
     void *ptr0 = kmalloc(31);
     print_hex(ptr0);
@@ -48,6 +45,9 @@ int main()
     print_hex(ptr2);
     print("\n");
     kfree(ptr2);
+
+    print("Dropping to usermode\n");
+    crunchatize_me_capn();
 
     return 0;
 }

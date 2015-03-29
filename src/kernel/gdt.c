@@ -61,7 +61,7 @@ void make_gdt_tss(gdt_entry_t *entry, tss_entry_t* tss)
 static void init_kernel_tss()
 {
     memset(&kernel_tss, 0, sizeof(kernel_tss));
-    kernel_tss.esp0 = 0x0;
+    kernel_tss.esp0 = 0x90000;
     kernel_tss.ss0 = 0x10;
 
     kernel_tss.cs = 0xB;
