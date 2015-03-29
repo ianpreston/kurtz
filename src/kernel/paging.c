@@ -155,7 +155,6 @@ void init_identity_paging()
 void enable_paging()
 {
     // Set cr3 to the address of the page directory
-    //asm volatile ("mov %0, %%cr3" : : "r" (&directory.tables));
     asm volatile ("mov %0, %%cr3" : : "r" (&kernel_dir->tables));
 
     // Enable paging by setitng the paging bit of cr0

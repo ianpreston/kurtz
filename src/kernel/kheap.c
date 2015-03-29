@@ -4,7 +4,7 @@
 #include "terminal.h"
 
 
-#define KHEAP_BASE 0x0C1000000
+#define KHEAP_BASE 0xA00000
 #define CHUNK_INCR 8
 #define CHUNK_SIZE(x) ((uint32_t)(x->next) - ((uint32_t)(x) + sizeof(x)))
 
