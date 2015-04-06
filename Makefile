@@ -25,9 +25,9 @@ build/%.o: src/kernel/%.c
 build/%.ao: src/kernel/asm/%.asm
 	$(ASM) -f elf $+ -o $@
 
-build/kernel.bin: $(C_OBJECTS) $(ASM_OBJECTS)
+build/kernel.bin: $(ASM_OBJECTS) $(C_OBJECTS)
 	$(LINKER) -m elf_i386 -Ttext $(ORG) $+ --oformat binary -o $@
 	echo $(OBJECTS)
 
-build/hda.img: build/kernel.bin build/bootloader.bin
+build/hda.img: build/bootloader.bin build/kernel.bin
 	cat $+ > $@
