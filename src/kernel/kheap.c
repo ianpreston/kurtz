@@ -14,7 +14,7 @@ static uint32_t heap_top;
 void init_kheap()
 {
     // Allocate the first page starting from KHEAP_BASE
-    vmem_alloc(KHEAP_BASE);
+    vmem_alloc(KHEAP_BASE, false);
     heap_top = KHEAP_BASE + PAGE_SIZE;
 
     // Create one big chunk of virtual memory (the size of one page
@@ -66,7 +66,7 @@ uint32_t more_kheap()
 {
     uint32_t base = heap_top;
     heap_top += PAGE_SIZE;
-    vmem_alloc(base);
+    vmem_alloc(base, false);
     return base;
 }
 

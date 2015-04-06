@@ -40,11 +40,13 @@ void init_pmem()
 /**
  * Virtual Memory Management
  */
-uint32_t vmem_alloc(uint32_t v_addr)
+uint32_t vmem_alloc(uint32_t v_addr, bool user)
 {
     uint32_t abs_idx = v_addr / 0x1000;
     uint32_t table_idx = abs_idx / 1024;
     uint32_t page_idx = abs_idx % 1024;
+
+    uint32_t flags = user ? 0x7 : 0x3;
 
     // Get the page table at `table_idx` within the directory, then map its
     // address to virtual address space. If it does not exist, create it.
@@ -55,7 +57,7 @@ uint32_t vmem_alloc(uint32_t v_addr)
     }
     else
     {
-        table = vmem_create_table(table_idx);
+        table = vmem_create_table(table_idx, flags);
     }
 
     // If this page already has a frame allocated, there's nothing
@@ -67,7 +69,7 @@ uint32_t vmem_alloc(uint32_t v_addr)
     uint32_t p_addr = pmem_alloc();
 
     // Set this page entry
-    table->pages[page_idx] = p_addr | 0x7;
+    table->pages[page_idx] = p_addr | flags;
 
     return v_addr;
 }
@@ -91,13 +93,13 @@ void vmem_free(uint32_t v_addr)
     asm volatile ("invlpg (%0)" : : "r" (v_addr) : "memory");
 }
 
-page_table_t* vmem_create_table(uint32_t table_idx)
+page_table_t* vmem_create_table(uint32_t table_idx, uint32_t flags)
 {
     // Allocate physical memory for this table
     page_table_t *table = (page_table_t*)pmem_alloc();
 
     // Map the table into the directory
-    kernel_dir->tables[table_idx] = (uint32_t)(table) | 0x7;
+    kernel_dir->tables[table_idx] = (uint32_t)(table) | flags;
 
     // Get the virtual address of the table itself (not its entry in
     // the directory) so it can be manipulated.
@@ -139,7 +141,7 @@ void init_kernel_dir()
     // Since the directory itself is a table, directory entries will be
     // treated as table entries and therefore mapped into virtual
     // memory automagically.
-    kernel_dir->tables[1023] = (uint32_t)kernel_dir | 0x7;
+    kernel_dir->tables[1023] = (uint32_t)kernel_dir | 0x3;
 }
 
 void init_identity_paging()
@@ -147,9 +149,9 @@ void init_identity_paging()
     page_table_t *ident_table = (page_table_t*)pmem_alloc();
     for (int i = 0; i < 1024; i++)
     {
-        ident_table->pages[i] = (i * 0x1000) | 0x7;
+        ident_table->pages[i] = (i * 0x1000) | 0x3;
     }
-    kernel_dir->tables[0] = (uint32_t)(ident_table) | 0x7;
+    kernel_dir->tables[0] = (uint32_t)(ident_table) | 0x3;
 }
 
 void enable_paging()

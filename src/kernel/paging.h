@@ -19,9 +19,9 @@ typedef struct page_directory
 } page_directory_t __attribute__((aligned(4096)));
 
 
-uint32_t vmem_alloc();
-page_table_t* vmem_create_table(uint32_t table_idx);
+uint32_t vmem_alloc(uint32_t addr, bool user);
 void vmem_free(uint32_t addr);
+page_table_t* vmem_create_table(uint32_t table_idx, uint32_t flags);
 
 void init_pmem();
 uint32_t pmem_alloc();
