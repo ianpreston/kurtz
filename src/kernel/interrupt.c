@@ -1,8 +1,8 @@
-#include "libkernel.h"
 #include "interrupt.h"
+#include "libkernel.h"
+#include "syscall.h"
 #include "terminal.h"
 #include "keyboard.h"
-
 
 // Specified in asm/isr.asm
 extern void isr_0(uint32_t);
@@ -37,14 +37,18 @@ void kernel_isr(registers_t r)
     print("Handled interrupt "); 
     print_hex((uint8_t)r.int_no);
     print("\n");
+
+    if ((uint8_t)r.int_no == (uint8_t)0xF1)
+    {
+        fire_syscall(0xF1, r);
+    }
 }
 
 void kernel_irq(registers_t r)
 {
     if (r.int_no == 0x21)
     {
-        // FIXME - Reverse dependencies here; interrupt handler shouldn't
-        // have knowledge of drivers.
+        // FIXME - Use fire_syscall
         handle_keyboard_irq();
     }
 
