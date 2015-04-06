@@ -140,7 +140,7 @@ void init_idt()
     set_idt_entry(0x28, (uint32_t)irq_15, 0x8E);
 
     interrupt_ptr.limit = sizeof(idt_descriptor)*256 - 1;
-    interrupt_ptr.base = &interrupt_table;
+    interrupt_ptr.base = (uint32_t)&interrupt_table;
 
-    lidt(&interrupt_ptr);
+    lidt((uint32_t)&interrupt_ptr);
 }

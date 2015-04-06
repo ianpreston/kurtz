@@ -20,8 +20,8 @@ typedef struct page_directory
 
 
 uint32_t vmem_alloc();
-void vmem_free(uint32_t);
 page_table_t* vmem_create_table(uint32_t table_idx);
+void vmem_free(uint32_t addr);
 
 void init_pmem();
 uint32_t pmem_alloc();

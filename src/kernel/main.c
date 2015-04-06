@@ -31,18 +31,18 @@ int main()
 
     print("kmalloc() test...\n");
     void *ptr0 = kmalloc(31);
-    print_hex(ptr0);
+    print_hex((uint32_t)ptr0);
     print(" ");
 
     void *ptr1 = kmalloc(8);
-    print_hex(ptr1);
+    print_hex((uint32_t)ptr1);
     print(" ");
 
     kfree(ptr1);
     kfree(ptr0);
 
     void *ptr2 = kmalloc(128);
-    print_hex(ptr2);
+    print_hex((uint32_t)ptr2);
     print("\n");
     kfree(ptr2);
 

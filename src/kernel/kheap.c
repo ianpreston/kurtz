@@ -50,7 +50,7 @@ void* kmalloc(uint32_t size)
         // If there is enough room, resize `cur` to `min_size` and make
         // a new chunk from the remaining space
         kheap_header_t *new_header = (kheap_header_t*)((uint32_t)(cur + 1) + min_size + 1);
-        if (new_header < heap_top && CHUNK_SIZE(cur) >= CHUNK_INCR)
+        if ((uint32_t)new_header < heap_top && CHUNK_SIZE(cur) >= CHUNK_INCR)
         {
             new_header->in_use = false;
             new_header->next = cur->next;

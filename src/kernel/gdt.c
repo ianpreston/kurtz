@@ -89,7 +89,7 @@ void init_gdt()
     init_kernel_tss();
 
     // Install the GDT
-    gdt_ptr.base = &gdt;
+    gdt_ptr.base = (uint32_t)&gdt;
     gdt_ptr.limit = sizeof(gdt) - 1;
     flush_gdt((uint32_t)&gdt_ptr);
     flush_tss();
