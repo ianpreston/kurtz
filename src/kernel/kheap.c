@@ -74,7 +74,7 @@ void kfree(void *mallocd)
 {
     // Find the header of `mallocd` (return value from kmalloc) and set
     // its free flag
-    kheap_header_t *header = (kheap_header_t*)(mallocd - sizeof(kheap_header_t));
+    kheap_header_t *header = (kheap_header_t*)((uint32_t)mallocd - sizeof(kheap_header_t));
     header->in_use = false;
 
     // Merge any free chunks following `header` into one big chunk

@@ -2,7 +2,7 @@ CC=gcc
 ASM=nasm
 LINKER=ld
 
-CFLAGS=-Wall -O0 -std=gnu99
+CFLAGS=-Wall -Werror -pedantic -O0 -std=gnu99
 KFLAGS=-c -ffreestanding -m32
 
 C_SOURCES=libkernel.c gdt.c terminal.c keyboard.c interrupt.c paging.c kheap.c proc.c syscall.c main.c
