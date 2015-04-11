@@ -5,20 +5,21 @@
 // Initializer - run before calling any other methods in this module.
 void init_terminal();
 
-// High level interface
-void print(char *message);
-void print_sys(char *message);
-void print_bad(char *message);
-void print_hex(int c);
+// External interface
+void printf(const char *format, ...);
+void printf_sys(const char *format, ...);
 void clear_screen();
 
-// Low level "internal" interface
-void put_terminal_word(uint32_t offset, char c, char s);
+// Internal interface
 void put_char(char c);
 void put_newline();
-void print_with_style(char *message, char style);
+void put_terminal_word(uint32_t offset, char c, char s);
 void clear_row(int row);
 void scroll_lines();
 void set_textmode_cursor();
 
+// Helper/support functions
+void enable_alert();
+void disable_alert();
+void print_hex(int c);
 #endif

@@ -1,30 +1,87 @@
 #include "terminal.h"
 #include "libkernel.h"
 #include <stdint.h>
-#define VMEM 0xB8000
+#include <stdarg.h>
+#define VIDEO_MEM 0xB8000
 
 
 static int cursor_row;
 static int cursor_col;
 static char sexy;
 
+/**
+ * Public interface
+ */
+
 void init_terminal()
 {
     cursor_row = 0;
     cursor_col = 0;
-    sexy = 0x02;
+    disable_alert();
     clear_screen();
 }
 
-void put_terminal_word(uint32_t offset, char c, char s)
+void printf(const char *format, ...)
 {
-    uint8_t* addr = (uint8_t*)(VMEM + (offset * 2));
-    uint16_t word = (s << 8) | (c & 0xFF);
-    memcpy((void*)addr, &word, sizeof word);
+    va_list argp;
+    uint8_t arg_cur;
+
+    va_start(argp, format);
+
+    for (const char *c = format; *c != '\0'; c ++)
+    {
+        if (*c == '\a')
+        {
+            enable_alert();
+            continue;
+        }
+        if (*c != '%')
+        {
+            put_char(*c);
+            continue;
+        }
+
+        c ++;
+        switch (*c)
+        {
+            case 'c':
+                arg_cur = va_arg(argp, int);
+                put_char(arg_cur);
+                break;
+            case 'x':
+                arg_cur = va_arg(argp, int);
+                printf("0x");
+                print_hex(arg_cur);
+                break;
+            case '%':
+                put_char('%');
+                break;
+        }
+    }
+
+    disable_alert();
+    va_end(argp);
 }
+
+void clear_screen()
+{
+    for (int i = 0; i < 24; i++) {
+        clear_row(i);
+    }
+}
+
+/**
+ * Internal interface
+ */
 
 void put_char(char c)
 {
+    if (c == '\n')
+    {
+        put_newline();
+        return;
+    }
+
     uint32_t offset = cursor_row * 80 + cursor_col;
     put_terminal_word(offset, c, sexy);
 
@@ -48,14 +105,29 @@ void put_newline()
     set_textmode_cursor();
 }
 
+void clear_row(int row)
+{
+    for (int i = 0; i < 80; i++)
+    {
+        put_terminal_word(row * 80 + i, 0, sexy);
+    }
+}
+
+void put_terminal_word(uint32_t offset, char c, char s)
+{
+    uint8_t* addr = (uint8_t*)(VIDEO_MEM + (offset * 2));
+    uint16_t word = (s << 8) | (c & 0xFF);
+    memcpy((void*)addr, &word, sizeof word);
+}
+
 void scroll_lines()
 {
     // Iterate over lines and copy the contents from the following line
     // into the current one
     for (int r=0; r<24; r++)
     {
-        uint8_t* row = (uint8_t*)(VMEM + (r * 160));
-        uint8_t* next_row = (uint8_t*)(VMEM + (r * 160) + 160);
+        uint8_t* row = (uint8_t*)(VIDEO_MEM + (r * 160));
+        uint8_t* next_row = (uint8_t*)(VIDEO_MEM + (r * 160) + 160);
         memcpy((void*)row, (void*)next_row, 160);
     }
 
@@ -71,45 +143,12 @@ void set_textmode_cursor()
     outb(0x3D5, (uint8_t)((offset >> 8) & 0xFF));
 }
 
-void print(char *message)
-{
-    int i = 0;
-    while (1) {
-        char chr = message[i];
-        if (chr == '\0') {
-            return;
-        }
-        else if (chr == '\n') {
-            put_newline();
-        }
-        else {
-            put_char(chr);
-        }
-        i ++;
-    }
-}
-
-void print_with_style(char *message, char style)
-{
-    char old_sexy = sexy;
-    sexy = style;
-    print(message);
-    sexy = old_sexy;
-}
-
-void print_sys(char *message)
-{
-    print_with_style(message, 0x09);
-}
-
-void print_bad(char *message)
-{
-    print_with_style(message, 0x0C);
-}
+/**
+ * Helper/support functions
+ */
 
 void print_hex(int c)
 {
-    print("0x");
     for (int i = 7; i >= 0; i--)
     {
         uint32_t divisor = pow(16, i);
@@ -138,17 +177,12 @@ void print_hex(int c)
     }
 }
 
-void clear_row(int row)
+void enable_alert()
 {
-    for (int i = 0; i < 80; i++)
-    {
-        put_terminal_word(row * 80 + i, 0, sexy);
-    }
+    sexy = 0x9;
 }
 
-void clear_screen()
+void disable_alert()
 {
-    for (int i = 0; i < 24; i++) {
-        clear_row(i);
-    }
+    sexy = 0x2;
 }

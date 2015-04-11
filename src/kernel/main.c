@@ -21,16 +21,16 @@ int main()
 
     init_proc();
 
-    print_sys("Booted Kernel Kurtz v0.0.0!\n\n");
+    printf("\aBooted Kernel Kurtz v0.0.0!\n\n");
 
-    print("Spawning processes\n");
+    printf("Spawning processes\n");
     proc_t *first_proc = spawn_proc();
     proc_t *second_proc = spawn_proc();
 
     load_helloworld_binary(first_proc);
     load_helloworld_binary(second_proc);
 
-    print_sys("Dropping to user mode!\n");
+    printf("\aDropping to user mode!\n\n");
     drop_to_usermode();
 
     return 0;

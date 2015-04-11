@@ -34,9 +34,7 @@ static idt_ptr interrupt_ptr;
 
 void kernel_isr(registers_t r)
 {
-    print("Handled interrupt "); 
-    print_hex((uint8_t)r.int_no);
-    print("\n");
+    printf("Handled interrupt %x\n", r.int_no);
 
     if ((uint8_t)r.int_no == (uint8_t)0xF1)
     {

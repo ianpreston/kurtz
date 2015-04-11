@@ -18,8 +18,7 @@ void handle_keyboard_irq()
         char ascii = scancode_to_ascii(scancode);
         if (ascii != '\0')
         {
-            char message[2] = {ascii, '\0'};
-            print(message);
+            printf("%c", ascii);
         }
     }
 

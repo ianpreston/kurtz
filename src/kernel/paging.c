@@ -127,8 +127,6 @@ void init_paging()
     enable_paging();
 
     kernel_dir = (page_directory_t*)(0xFFFFF000);
-
-    print_sys("Set up virtual memory\n");
 }
 
 void init_kernel_dir()

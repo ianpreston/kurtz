@@ -60,9 +60,7 @@ void drop_to_usermode()
 
 void yield_from(uint32_t eip, uint32_t esp)
 {
-    print("Process yields with pid=");
-    print_hex(executing_proc->pid);
-    print("\n");
+    printf("Process pid=%x yields\n", executing_proc->pid);
 
     executing_proc->eip = eip;
     executing_proc->esp = esp;
@@ -76,9 +74,7 @@ void yield_from(uint32_t eip, uint32_t esp)
         executing_proc = last_proc;
     }
 
-    print("Switching to process with pid=");
-    print_hex(executing_proc->pid);
-    print("\n");
+    printf("Switching to process pid=%x\n", executing_proc->pid);
 
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
