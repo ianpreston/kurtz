@@ -8,14 +8,6 @@
 #include "proc.h"
 
 
-void init_pit_timer()
-{
-    uint32_t divisor = 1193180 / 5; // 5Hz
-    outb(0x43, 0x36);
-    outb(0x40, (uint8_t)(divisor & 0xFF));
-    outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
-}
-
 int main()
 {
     init_gdt();
@@ -26,7 +18,6 @@ int main()
     init_terminal();
 
     init_interrupts();
-    init_pit_timer();
 
     init_proc();
 

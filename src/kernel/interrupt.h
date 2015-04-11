@@ -30,5 +30,6 @@ void init_interrupts();
 void init_idt();
 void reset_pic();
 void kernel_isr(registers_t r);
+void init_pit_timer();
 
 #endif

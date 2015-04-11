@@ -82,6 +82,7 @@ void init_interrupts()
 {
     reset_pic();
     init_idt();
+    init_pit_timer();
 
     asm volatile ("sti");
     print_sys("Enabled interrupts\n");
@@ -147,4 +148,12 @@ void init_idt()
     interrupt_ptr.base = (uint32_t)&interrupt_table;
 
     lidt((uint32_t)&interrupt_ptr);
+}
+
+void init_pit_timer()
+{
+    uint32_t divisor = 1193180 / 5; // 5Hz
+    outb(0x43, 0x36);
+    outb(0x40, (uint8_t)(divisor & 0xFF));
+    outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
 }
