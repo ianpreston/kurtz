@@ -85,7 +85,6 @@ void init_interrupts()
     init_pit_timer();
 
     asm volatile ("sti");
-    print_sys("Enabled interrupts\n");
 }
 
 void reset_pic()

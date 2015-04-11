@@ -14,7 +14,6 @@ void init_terminal()
     cursor_col = 0;
     sexy = 0x02;
     clear_screen();
-    print("Initalized text mode driver\n");
 }
 
 void put_terminal_word(uint32_t offset, char c, char s)

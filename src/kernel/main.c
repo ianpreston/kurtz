@@ -23,23 +23,6 @@ int main()
 
     print_sys("Booted Kernel Kurtz v0.0.0!\n\n");
 
-    print("kmalloc() test...\n");
-    void *ptr0 = kmalloc(31);
-    print_hex((uint32_t)ptr0);
-    print(" ");
-
-    void *ptr1 = kmalloc(8);
-    print_hex((uint32_t)ptr1);
-    print(" ");
-
-    kfree(ptr1);
-    kfree(ptr0);
-
-    void *ptr2 = kmalloc(128);
-    print_hex((uint32_t)ptr2);
-    print("\n");
-    kfree(ptr2);
-
     print("Spawning processes\n");
     proc_t *first_proc = spawn_proc();
     proc_t *second_proc = spawn_proc();
