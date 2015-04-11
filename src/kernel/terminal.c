@@ -24,7 +24,7 @@ void init_terminal()
 void printf(const char *format, ...)
 {
     va_list argp;
-    uint8_t arg_cur;
+    int arg_cur = 0;
 
     va_start(argp, format);
 
@@ -46,11 +46,12 @@ void printf(const char *format, ...)
         {
             case 'c':
                 arg_cur = va_arg(argp, int);
-                put_char(arg_cur);
+                put_char((char)arg_cur);
                 break;
             case 'x':
                 arg_cur = va_arg(argp, int);
-                printf("0x");
+                put_char('0');
+                put_char('x');
                 print_hex(arg_cur);
                 break;
             case '%':
