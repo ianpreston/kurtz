@@ -17,15 +17,15 @@ int main()
 
     init_terminal();
 
-    init_interrupts();
-
     init_proc();
+
+    init_interrupts();
 
     printf("\aBooted Kernel Kurtz v0.0.0!\n\n");
 
     printf("Spawning processes\n");
-    proc_t *first_proc = spawn_proc();
-    proc_t *second_proc = spawn_proc();
+    proc_t *first_proc = proc_spawn();
+    proc_t *second_proc = proc_spawn();
 
     load_helloworld_binary(first_proc);
     load_helloworld_binary(second_proc);

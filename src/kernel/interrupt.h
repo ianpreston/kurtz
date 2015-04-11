@@ -22,13 +22,16 @@ typedef struct
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax,
              int_no, err_code, eip, cs,
              eflags, useresp, ss;
-} registers_t;
+} __attribute__((packed)) registers_t;
 
 
+// Public interface
 void init_interrupts();
 
+// Internal interface
 void init_idt();
 void reset_pic();
+void irq_reset();
 void kernel_isr(registers_t r);
 void init_pit_timer();
 

@@ -19,15 +19,17 @@ typedef struct struct_proc
 } proc_t;
 
 
+// Public interface
 void init_proc();
-proc_t* spawn_proc();
+proc_t* proc_spawn();
 void drop_to_usermode();
+void proc_switch_from(uint32_t eip, uint32_t esp);
 
-void yield_from(uint32_t eip, uint32_t esp);
-
+// Public interface (temporary)
 void load_helloworld_binary(proc_t *proc);
 void load_idle_binary(proc_t *proc);
 
-proc_t* create_proc(uint8_t pid, proc_t *prev);
+// Internal interface
+proc_t* proc_create(uint8_t pid, proc_t *prev);
 
 #endif

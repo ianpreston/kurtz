@@ -4,6 +4,6 @@
 #include "interrupt.h"
 
 
-void fire_syscall(uint8_t int_no, registers_t regs);
+void syscall_fire();
 
 #endif

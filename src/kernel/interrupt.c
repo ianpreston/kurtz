@@ -3,6 +3,7 @@
 #include "syscall.h"
 #include "terminal.h"
 #include "keyboard.h"
+#include "proc.h"
 
 // Specified in asm/isr.asm
 extern void isr_0(uint32_t);
@@ -34,11 +35,10 @@ static idt_ptr interrupt_ptr;
 
 void kernel_isr(registers_t r)
 {
-    printf("Handled interrupt %x\n", r.int_no);
-
     if ((uint8_t)r.int_no == (uint8_t)0xF1)
     {
-        fire_syscall(0xF1, r);
+        // FIXME - Invert dependency
+        syscall_fire(); 
     }
 }
 
@@ -46,18 +46,20 @@ void kernel_irq(registers_t r)
 {
     if (r.int_no == 0x21)
     {
-        // FIXME - Use fire_syscall
+        // FIXME - Invert dependency
         handle_keyboard_irq();
+        irq_reset();
     }
-
-    // Master PIC handles IRQ 0-7 (ISR 32-40), slave handles
-    // 40-47. Reset the master PIC, and if this is from the
-    // slave PIC, reset the slave as well.
-    if (r.int_no >= 40)
+    else if (r.int_no == 0x20)
     {
-        outb(0xA0, 0x20);
+        irq_reset();
+        // FIXME - Invert dependency
+        proc_switch_from(r.eip, r.useresp);
     }
-    outb(0x20, 0x20);
+    else
+    {
+        irq_reset();
+    }
 }
 
 static void set_idt_entry(int interrupt_num, uint32_t addr, uint8_t attributes)
@@ -76,13 +78,23 @@ static inline void lidt(uint32_t ptr)
     asm volatile ("lidt (%0)" : "=p" (ptr));
 }
 
+void irq_reset(int interrupt_num)
+{
+    // Master PIC handles IRQ 0-7 (ISR 32-40), slave handles
+    // 40-47. Reset the master PIC, and if this is from the
+    // slave PIC, reset the slave as well.
+    if (interrupt_num >= 40)
+    {
+        outb(0xA0, 0x20);
+    }
+    outb(0x20, 0x20);
+}
+
 void init_interrupts()
 {
     reset_pic();
     init_idt();
     init_pit_timer();
-
-    asm volatile ("sti");
 }
 
 void reset_pic()
@@ -137,7 +149,7 @@ void init_idt()
     set_idt_entry(0xF1, (uint32_t)isr_241, 0xEE);
 
     // IRQ ISRs
-    set_idt_entry(0x20, (uint32_t)irq_0, 0x8E);
+    set_idt_entry(0x20, (uint32_t)irq_0, 0xEE);
     set_idt_entry(0x21, (uint32_t)irq_1, 0x8E);
     set_idt_entry(0x28, (uint32_t)irq_15, 0x8E);
 

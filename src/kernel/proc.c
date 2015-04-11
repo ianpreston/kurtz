@@ -4,7 +4,6 @@
 #include "kheap.h"
 #include "terminal.h"
 
-
 extern void crunchatize_me_capn(uint32_t eip, uint32_t esp);
 
 static proc_t *last_proc = NULL;
@@ -12,17 +11,17 @@ static proc_t *executing_proc = NULL;
 
 void init_proc()
 {
-    last_proc = create_proc(0, NULL);
+    last_proc = proc_create(1, NULL);
     load_idle_binary(last_proc);
 }
 
-proc_t* spawn_proc()
+proc_t* proc_spawn()
 {
-    last_proc = create_proc(last_proc->pid + 1, last_proc);
+    last_proc = proc_create(last_proc->pid + 1, last_proc);
     return last_proc;
 }
 
-proc_t* create_proc(uint8_t pid, proc_t *prev)
+proc_t* proc_create(uint8_t pid, proc_t *prev)
 {
     // TODO - Don't assume processes will fit in 4kb
     // TODO - Memory protection would be nice...
@@ -58,9 +57,9 @@ void drop_to_usermode()
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
 
-void yield_from(uint32_t eip, uint32_t esp)
+void proc_switch_from(uint32_t eip, uint32_t esp)
 {
-    printf("Process pid=%x yields\n", executing_proc->pid);
+    printf("Switching from process %x", executing_proc->pid);
 
     executing_proc->eip = eip;
     executing_proc->esp = esp;
@@ -74,7 +73,7 @@ void yield_from(uint32_t eip, uint32_t esp)
         executing_proc = last_proc;
     }
 
-    printf("Switching to process pid=%x\n", executing_proc->pid);
+    printf(" to %x\n", executing_proc->pid);
 
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
