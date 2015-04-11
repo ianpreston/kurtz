@@ -58,17 +58,17 @@ IRQ 1, 33
 IRQ 15, 40
 
 interrupt_handler:
-    pusha
+    pushad
     call kernel_isr
-    popa
+    popad
     add esp, 8
     sti
     iret
 
 irq_handler:
-    pusha
+    pushad
     call kernel_irq
-    popa
+    popad
     add esp, 8
     sti
     iret
