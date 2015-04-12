@@ -6,32 +6,38 @@
 
 extern void crunchatize_me_capn(uint32_t eip, uint32_t esp);
 
-static proc_t *last_proc = NULL;
+static proc_t *base_proc = NULL;
 static proc_t *executing_proc = NULL;
 
 void init_proc()
 {
-    last_proc = proc_create(1, NULL);
-    load_idle_binary(last_proc);
+    base_proc = proc_create(1);
+    load_idle_binary(base_proc);
 }
 
 proc_t* proc_spawn()
 {
-    last_proc = proc_create(last_proc->pid + 1, last_proc);
-    return last_proc;
+    proc_t *prev = base_proc;
+    while (prev->next != NULL)
+    {
+        prev = prev->next;
+    }
+
+    prev->next = proc_create(prev->pid + 1);
+    return prev->next;
 }
 
-proc_t* proc_create(uint8_t pid, proc_t *prev)
+proc_t* proc_create(uint8_t pid)
 {
     // TODO - Don't assume processes will fit in 4kb
     // TODO - Memory protection would be nice...
 
     proc_t *process = (proc_t*)kmalloc(sizeof(proc_t));
     process->pid = pid;
+    process->next = NULL;
 
     process->bin_base = process->eip = PROC_BIN_BASE + (process->pid * 0x1000);
     process->stack_base = process->esp = PROC_STACK_BASE + (process->pid * 0x100);
-    process->prev = prev;
 
     vmem_alloc(process->bin_base, true);
     vmem_alloc(process->stack_base, true);
@@ -53,27 +59,32 @@ void load_idle_binary(proc_t *proc)
 
 void drop_to_usermode()
 {
-    executing_proc = last_proc;
+    executing_proc = base_proc;
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
 
 void proc_switch_from(uint32_t eip, uint32_t esp)
 {
-    printf("Switching from process %x", executing_proc->pid);
+    proc_t *switch_from = executing_proc;
 
-    executing_proc->eip = eip;
-    executing_proc->esp = esp;
-
-    if (executing_proc->prev != NULL)
+    if (executing_proc->next != NULL)
     {
-        executing_proc = executing_proc->prev;
+        executing_proc = executing_proc->next;
     }
     else
     {
-        executing_proc = last_proc;
+        executing_proc = base_proc;
     }
 
-    printf(" to %x\n", executing_proc->pid);
+    // debug: Log task switches as long as they are not from the idle
+    // process to itself.
+    if (switch_from->pid != 1 || executing_proc->pid != 1)
+    {
+        printf("Switching from process %x to %x\n", switch_from->pid, executing_proc->pid);
+    }
+
+    switch_from->eip = eip;
+    switch_from->esp = esp;
 
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }

@@ -15,7 +15,7 @@ typedef struct struct_proc
     uint32_t esp;
     uint32_t eip;
 
-    struct struct_proc *prev;
+    struct struct_proc *next;
 } proc_t;
 
 
@@ -30,6 +30,6 @@ void load_helloworld_binary(proc_t *proc);
 void load_idle_binary(proc_t *proc);
 
 // Internal interface
-proc_t* proc_create(uint8_t pid, proc_t *prev);
+proc_t* proc_create(uint8_t pid);
 
 #endif
