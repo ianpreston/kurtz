@@ -35,7 +35,7 @@ static idt_ptr interrupt_ptr;
 
 void kernel_isr(registers_t r)
 {
-    if ((uint8_t)r.int_no == (uint8_t)0xF1)
+    if ((uint8_t)r.int_num == (uint8_t)0xF1)
     {
         // FIXME - Invert dependency
         syscall_fire(r.eax, r.ebx, r.ecx, r.edx);
@@ -44,13 +44,13 @@ void kernel_isr(registers_t r)
 
 void kernel_irq(registers_t r)
 {
-    if (r.int_no == 0x21)
+    if (r.int_num == 0x21)
     {
         // FIXME - Invert dependency
         handle_keyboard_irq();
         irq_reset();
     }
-    else if (r.int_no == 0x20)
+    else if (r.int_num == 0x20)
     {
         irq_reset();
         // FIXME - Invert dependency

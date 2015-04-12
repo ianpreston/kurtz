@@ -21,7 +21,7 @@ int main()
 
     init_interrupts();
 
-    printf("\aBooted Kernel Kurtz v0.0.0!\n\n");
+    printf("\aBooted Kernel Kurtz v0.0.0!\n");
 
     printf("Spawning processes\n");
     proc_t *first_proc = proc_spawn();

@@ -20,7 +20,7 @@ typedef struct
 typedef struct
 {
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax,
-             int_no, err_code, eip, cs,
+             int_num, err_code, eip, cs,
              eflags, useresp, ss;
 } __attribute__((packed)) registers_t;
 
