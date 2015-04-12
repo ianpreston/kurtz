@@ -4,6 +4,11 @@
 #include "interrupt.h"
 
 
-void syscall_fire();
+// Public interface
+void syscall_fire(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx);
+
+// Internal interface
+void sys_write(uint32_t string_addr);
+void sys_exit(uint32_t code);
 
 #endif

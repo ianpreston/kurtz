@@ -38,7 +38,7 @@ void kernel_isr(registers_t r)
     if ((uint8_t)r.int_no == (uint8_t)0xF1)
     {
         // FIXME - Invert dependency
-        syscall_fire(); 
+        syscall_fire(r.eax, r.ebx, r.ecx, r.edx);
     }
 }
 
