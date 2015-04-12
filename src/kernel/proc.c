@@ -45,6 +45,27 @@ proc_t* proc_create(uint8_t pid)
     return process;
 }
 
+void proc_exit()
+{
+    proc_t *exited = executing_proc;
+
+    // Get the process immediately before `exited` in the list
+    proc_t *cur = base_proc;
+    while (cur->next != exited)
+    {
+        cur = cur->next;
+    }
+
+    // Remove exited from the linked list
+    cur->next = exited->next;
+
+    executing_proc = cur;
+    printf("Process %x exited. Switching to %x\n", exited->pid, executing_proc->pid);
+
+    kfree(exited);
+    crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
+}
+
 void load_helloworld_binary(proc_t *proc)
 {
     char* program = "\xb8\x04\x00\x00\x00\xbb\x1a\x30\x00\x0a\xcd\xf1\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\xf1\xeb\xfe\x48\x65\x6c\x6c\x6f\x2c\x20\x77\x6f\x72\x6c\x64\x21\x0a\x00";

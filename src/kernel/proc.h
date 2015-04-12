@@ -22,6 +22,7 @@ typedef struct struct_proc
 // Public interface
 void init_proc();
 proc_t* proc_spawn();
+void proc_exit();
 void drop_to_usermode();
 void proc_switch_from(uint32_t eip, uint32_t esp);
 

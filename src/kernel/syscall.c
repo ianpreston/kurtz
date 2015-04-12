@@ -32,5 +32,6 @@ void sys_write(uint32_t string_addr)
 
 void sys_exit(uint32_t code)
 {
-    printf("\aProcess exits with code %x\n", code);
+    printf("Process exits with code %x\n", code);
+    proc_exit();
 }
