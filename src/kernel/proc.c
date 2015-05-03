@@ -29,20 +29,31 @@ proc_t* proc_spawn()
 
 proc_t* proc_create(uint8_t pid)
 {
-    // TODO - Don't assume processes will fit in 4kb
-    // TODO - Memory protection would be nice...
-
     proc_t *process = (proc_t*)kmalloc(sizeof(proc_t));
     process->pid = pid;
     process->next = NULL;
 
-    process->bin_base = process->eip = PROC_BIN_BASE + (process->pid * 0x1000);
-    process->stack_base = process->esp = PROC_STACK_BASE + (process->pid * 0x100);
+    process->cs_base = process->eip = PROC_BIN_BASE;
+    process->ss_base = process->esp = PROC_STACK_BASE;
 
-    vmem_alloc(process->bin_base, true);
-    vmem_alloc(process->stack_base, true);
+    // Allocate physical memory for this process' code/data and stack
+    // segments, but don't map it into memory yet.
+    process->cs_p_addr = pmem_alloc();
+    process->ss_p_addr = pmem_alloc();
 
     return process;
+}
+
+void proc_vmem_map(proc_t *proc)
+{
+    vmem_map(proc->cs_base, proc->cs_p_addr, 0x7);
+    vmem_map(proc->ss_base, proc->ss_p_addr, 0x7);
+}
+
+void proc_vmem_unmap(proc_t *proc)
+{
+    // Not necessary to do anything here, as currently all processes
+    // share the same virtual addresses.
 }
 
 void proc_exit()
@@ -60,27 +71,34 @@ void proc_exit()
     cur->next = exited->next;
 
     executing_proc = cur;
-    printf("Process %x exited. Switching to %x\n", exited->pid, executing_proc->pid);
 
+    printf("Process %x exited. Switching to %x\n", exited->pid, executing_proc->pid);
     kfree(exited);
+
+    proc_vmem_map(executing_proc);
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
 
 void load_helloworld_binary(proc_t *proc)
 {
-    char* program = "\xb8\x04\x00\x00\x00\xbb\x1a\x30\x00\x0a\xcd\xf1\xb8\x01\x00\x00\x00\xbb\x01\x00\x00\x00\xcd\xf1\xeb\xfe\x48\x65\x6c\x6c\x6f\x2c\x20\x77\x6f\x72\x6c\x64\x21\x0a\x00";
-    memcpy((void*)proc->bin_base, program, 41);
+    char* program = "\xb8\x04\x00\x00\x00\xbb\x1a\x00\x00\x0c\xcd\xf1\xb8\x01\x00\x00\x00\xbb\x01\x00\x00\x00\xcd\xf1\xeb\xfe\x48\x65\x6c\x6c\x6f\x2c\x20\x77\x6f\x72\x6c\x64\x21\x0a\x00";
+
+    proc_vmem_map(proc);
+    memcpy((void*)proc->cs_base, program, 41);
 }
 
 void load_idle_binary(proc_t *proc)
 {
     char* program = "\x90\x90\xeb\xfe";
-    memcpy((void*)proc->bin_base, program, 4);
+
+    proc_vmem_map(proc);
+    memcpy((void*)proc->cs_base, program, 4);
 }
 
 void drop_to_usermode()
 {
     executing_proc = base_proc;
+    proc_vmem_map(executing_proc);
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
 
@@ -106,6 +124,9 @@ void proc_switch_from(uint32_t eip, uint32_t esp)
 
     switch_from->eip = eip;
     switch_from->esp = esp;
+
+    proc_vmem_unmap(switch_from);
+    proc_vmem_map(executing_proc);
 
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }

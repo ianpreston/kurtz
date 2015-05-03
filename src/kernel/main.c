@@ -27,6 +27,11 @@ int main()
     proc_t *first_proc = proc_spawn();
     proc_t *second_proc = proc_spawn();
 
+    printf("first_proc=%x\n", first_proc->pid);
+    printf("    cs_base=%x cs_p_addr=%x\n", first_proc->cs_base, first_proc->cs_p_addr);
+    printf("second_proc=%x\n", second_proc->pid);
+    printf("    cs_base=%x cs_p_addr=%x\n", second_proc->cs_base, second_proc->cs_p_addr);
+
     load_helloworld_binary(first_proc);
     load_helloworld_binary(second_proc);
 
