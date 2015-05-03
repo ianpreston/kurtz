@@ -40,38 +40,24 @@ void init_pmem()
 /**
  * Virtual Memory Management
  */
-uint32_t vmem_alloc(uint32_t v_addr, bool user)
+bool vmem_alloc(uint32_t v_addr, bool user)
 {
-    uint32_t abs_idx = v_addr / 0x1000;
+    uint32_t abs_idx = (v_addr / 0x1000);
     uint32_t table_idx = abs_idx / 1024;
     uint32_t page_idx = abs_idx % 1024;
 
-    uint32_t flags = user ? 0x7 : 0x3;
+    // If the page at `v_addr` is already mapped into virtual memory, ensure
+    // it isn't overwritten.
+    page_table_t *dir_table = DIR_TABLE_PTR(kernel_dir->tables[table_idx]);
+    page_table_t *table = (page_table_t*)(0xFFC00000 + (table_idx * 4096));
+    if (dir_table != 0x0 && table->pages[page_idx] != 0x0)
+        return false;
 
-    // Get the page table at `table_idx` within the directory, then map its
-    // address to virtual address space. If it does not exist, create it.
-    page_table_t *table = DIR_TABLE_PTR(kernel_dir->tables[table_idx]);
-    if (table != 0x0)
-    {
-        table = (page_table_t*)(0xFFC00000 + (table_idx * 4096));
-    }
-    else
-    {
-        table = vmem_create_table(table_idx, flags);
-    }
-
-    // If this page already has a frame allocated, there's nothing
-    // to do.
-    if (table->pages[page_idx] != 0x0)
-        return 0;
-
-    // Allocate a physical frame
     uint32_t p_addr = pmem_alloc();
+    uint32_t flags = user ? 0x7 : 0x3;
+    vmem_map(v_addr, p_addr, flags);
 
-    // Set this page entry
-    table->pages[page_idx] = p_addr | flags;
-
-    return v_addr;
+    return true;
 }
 
 void vmem_free(uint32_t v_addr)
@@ -89,6 +75,40 @@ void vmem_free(uint32_t v_addr)
     pmem_free(p_addr);
 
     // Disable this page entry & invaldate it in the TLB
+    table->pages[page_idx] = 0x0;
+    asm volatile ("invlpg (%0)" : : "r" (v_addr) : "memory");
+}
+
+void vmem_map(uint32_t v_addr, uint32_t p_addr, uint32_t flags)
+{
+    uint32_t abs_idx = (v_addr / 0x1000);
+    uint32_t table_idx = abs_idx / 1024;
+    uint32_t page_idx = abs_idx % 1024;
+
+    // Get the page table at `table_idx` within the directory, then map its
+    // address to virtual address space. If it does not exist, create it.
+    page_table_t *table = DIR_TABLE_PTR(kernel_dir->tables[table_idx]);
+    if (table != 0x0)
+    {
+        table = (page_table_t*)(0xFFC00000 + (table_idx * 4096));
+    }
+    else
+    {
+        table = vmem_create_table(table_idx, flags);
+    }
+    
+    table->pages[page_idx] = p_addr | 0x7;
+    asm volatile ("invlpg (%0)" : : "r" (v_addr) : "memory");
+}
+
+void vmem_unmap(uint32_t v_addr)
+{
+    uint32_t abs_idx = (v_addr / 0x1000);
+    uint32_t table_idx = abs_idx / 1024;
+    uint32_t page_idx = abs_idx % 1024;
+    
+    page_table_t *table = (page_table_t*)(0xFFC00000 + (table_idx * 4096));
+
     table->pages[page_idx] = 0x0;
     asm volatile ("invlpg (%0)" : : "r" (v_addr) : "memory");
 }

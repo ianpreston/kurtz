@@ -19,15 +19,25 @@ typedef struct page_directory
 } page_directory_t __attribute__((aligned(4096)));
 
 
-uint32_t vmem_alloc(uint32_t addr, bool user);
-void vmem_free(uint32_t addr);
-page_table_t* vmem_create_table(uint32_t table_idx, uint32_t flags);
+// Public interface
+void init_paging();
 
-void init_pmem();
+// Virtual memory - Public high-level and low-level interfaces
+bool vmem_alloc(uint32_t addr, bool user);
+void vmem_free(uint32_t addr);
+
+void vmem_map(uint32_t v_addr, uint32_t p_addr, uint32_t flags);
+void vmem_unmap(uint32_t v_addr);
+
+// Physical memory - Public low-level interface
 uint32_t pmem_alloc();
 void pmem_free(uint32_t);
 
-void init_paging();
+// Internal interface
+page_table_t* vmem_create_table(uint32_t table_idx, uint32_t flags);
+
+void init_pmem();
+
 void init_kernel_dir();
 void init_identity_paging();
 void enable_paging();
