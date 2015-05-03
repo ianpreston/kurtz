@@ -1,6 +1,5 @@
 *.o
 *.bin
+*.sh
+*.iso
 build/
-build.sh
-run.sh
-hda.img
