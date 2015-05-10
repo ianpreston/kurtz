@@ -15,7 +15,7 @@ align 4
 section .stack, nobits
 align 4
 stack_base:
-times 16384 resb 0
+resb 16384
 stack_top:
 
 
@@ -23,6 +23,12 @@ section .text
 extern main
 global _start
 _start:
+    mov esp, stack_top
+    mov ebp, stack_base
+
+    push ebx
+    push eax
     call main 
 
+    cli
     chill: jmp chill
