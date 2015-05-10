@@ -6,6 +6,7 @@
 #include "paging.h"
 #include "kheap.h"
 #include "proc.h"
+#include "initrd.h"
 
 
 typedef struct
@@ -63,8 +64,18 @@ int main(uint32_t magic, bootinfo_t *header)
         return 1;
     }
 
+    if (header->mods_count != (uint32_t)1)
+    {
+        printf("\aInvalid number of multiboot modules");
+        return 1;
+    }
+
     printf("\aBooted Kernel Kurtz v0.0.0!\n");
     printf("Multiboot flags=%x\n", header->flags);
+
+    printf("Loading initial ramdisk\n");
+    modinfo_t *initrd_mod = (modinfo_t*)header->mods_addr;
+    load_initrd((void*)initrd_mod->mod_start);
 
     printf("Spawning processes\n");
     proc_t *first_proc = proc_spawn();
