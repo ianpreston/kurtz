@@ -22,12 +22,7 @@ void syscall_fire(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx)
 
 void sys_write(uint32_t string_addr)
 {
-    char *c = (char*)string_addr;
-    while (*c != '\0')
-    {
-        printf("%c", *c);
-        c ++;
-    }
+    printf("%s", (char*)string_addr);
 }
 
 void sys_exit(uint32_t code)

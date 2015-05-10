@@ -24,7 +24,8 @@ void init_terminal()
 void printf(const char *format, ...)
 {
     va_list argp;
-    int arg_cur = 0;
+    int i_arg_cur = 0;
+    char* s_arg_cur;
 
     va_start(argp, format);
 
@@ -44,15 +45,22 @@ void printf(const char *format, ...)
         c ++;
         switch (*c)
         {
-            case 'c':
-                arg_cur = va_arg(argp, int);
-                put_char((char)arg_cur);
-                break;
             case 'x':
-                arg_cur = va_arg(argp, int);
+                i_arg_cur = va_arg(argp, int);
                 put_char('0');
                 put_char('x');
-                print_hex(arg_cur);
+                print_hex(i_arg_cur);
+                break;
+            case 'c':
+                i_arg_cur = va_arg(argp, int);
+                put_char((char)i_arg_cur);
+                break;
+            case 's':
+                s_arg_cur = va_arg(argp, char*);
+                for (char *sc = s_arg_cur; *sc != '\0'; sc++)
+                {
+                    put_char(*sc);
+                }
                 break;
             case '%':
                 put_char('%');
