@@ -1,7 +1,7 @@
 #include "libkernel.h"
 
 
-void memset(void* start, uint8_t byte, int n)
+void memset(void *start, uint8_t byte, int n)
 {
     uint8_t *addr = (uint8_t*)start;
     while (n)
@@ -12,7 +12,7 @@ void memset(void* start, uint8_t byte, int n)
     }
 }
 
-void memcpy(void* dest, void* src, int n)
+void memcpy(void *dest, void *src, int n)
 {
     uint8_t *d = (uint8_t*)dest;
     uint8_t *s = (uint8_t*)src;
@@ -23,6 +23,24 @@ void memcpy(void* dest, void* src, int n)
         s ++;
         n --;
     }
+}
+
+bool strcmp(char *left, char *right)
+{
+    while (true)
+    {
+        if (*left != *right)
+        {
+            return false;
+        }
+        if (*left == '\0' && *right == '\0')
+        {
+            return true;
+        }
+        left++;
+        right++;
+    }
+    return false;
 }
 
 void outb(uint16_t port, uint8_t byte)

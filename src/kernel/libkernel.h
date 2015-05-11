@@ -1,9 +1,12 @@
 #ifndef _LIBKERNEL_H
 #define _LIBKERNEL_H
 #include <stdint.h>
+#include <stdbool.h>
 
-void memset(void* start, uint8_t byte, int n);
-void memcpy(void* dest, void* src, int n);
+void memset(void *start, uint8_t byte, int n);
+void memcpy(void *dest, void *src, int n);
+
+bool strcmp(char *left, char *right);
 
 int pow(int base, int exp);
 
