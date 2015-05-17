@@ -6,6 +6,7 @@
 #include "paging.h"
 #include "kheap.h"
 #include "proc.h"
+#include "ramfs.h"
 #include "initrd.h"
 
 
@@ -55,6 +56,7 @@ int main(uint32_t magic, bootinfo_t *header)
     init_terminal();
 
     init_proc();
+    init_ramfs();
 
     init_interrupts();
 
