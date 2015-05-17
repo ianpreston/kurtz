@@ -77,7 +77,9 @@ int main(uint32_t magic, bootinfo_t *header)
 
     printf("Loading initial ramdisk\n");
     modinfo_t *initrd_mod = (modinfo_t*)header->mods_addr;
-    load_initrd((void*)initrd_mod->mod_start);
+    initrd_load_tar((void*)initrd_mod->mod_start);
+
+    ramfs_debug();
 
     printf("Spawning processes\n");
     proc_t *first_proc = proc_spawn();

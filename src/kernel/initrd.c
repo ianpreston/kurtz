@@ -1,9 +1,10 @@
 #include "libkernel.h"
 #include "initrd.h"
+#include "ramfs.h"
 #include "terminal.h"
 
 
-void load_initrd(void *tar_archive)
+void initrd_load_tar(void *tar_archive)
 {
     tar_header_t *header = (tar_header_t*)tar_archive;
     while (true)
@@ -23,16 +24,16 @@ tar_header_t* load_tar_file(tar_header_t *header)
         return 0;
     }
 
+    void *content = (void*)(((uint32_t)header) + sizeof(tar_header_t));
     uint32_t size = load_header_size(header);
 
-    // TODO - Build a ramfs node
-    printf("File name: %s\n", header->filename);
-    printf("File size: %x\n", size);
+    ramfs_file_t *new_file = ramfs_touch(header->filename);
+    ramfs_memcpy(new_file, content, size);
 
     // Find the location of the next file header. The next header is after: 1) this header, 2) the
     // file described by this header, and 3) up to 512 bytes of alignment.
     uint32_t padding = (size == 512) ? 0 : size % 512;
-    tar_header_t *next = (tar_header_t*)(((uint32_t)header) + sizeof(tar_header_t) + size + (512 - padding));
+    tar_header_t *next = (tar_header_t*)(((uint32_t)content) + size + (512 - padding));
     return next;
 }
 

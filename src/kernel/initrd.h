@@ -18,7 +18,7 @@ typedef struct
 
 
 // Public interface
-void load_initrd(void *tar_archive);
+void initrd_load_tar(void *tar_archive);
 
 // Internal interface
 tar_header_t* load_tar_file(tar_header_t *header);
