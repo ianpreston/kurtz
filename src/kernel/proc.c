@@ -12,7 +12,7 @@ static proc_t *executing_proc = NULL;
 void init_proc()
 {
     base_proc = proc_create(1);
-    load_idle_binary(base_proc);
+    proc_load_idle_binary(base_proc);
 }
 
 proc_t* proc_spawn()
@@ -79,15 +79,13 @@ void proc_exit()
     crunchatize_me_capn(executing_proc->eip, executing_proc->esp);
 }
 
-void load_helloworld_binary(proc_t *proc)
+void proc_load_binary(proc_t *proc, void *bin, uint32_t len)
 {
-    char* program = "\xb8\x04\x00\x00\x00\xbb\x1a\x00\x00\x0c\xcd\xf1\xb8\x01\x00\x00\x00\xbb\x01\x00\x00\x00\xcd\xf1\xeb\xfe\x48\x65\x6c\x6c\x6f\x2c\x20\x77\x6f\x72\x6c\x64\x21\x0a\x00";
-
     proc_vmem_map(proc);
-    memcpy((void*)proc->cs_base, program, 41);
+    memcpy((void*)proc->cs_base, bin, len);
 }
 
-void load_idle_binary(proc_t *proc)
+void proc_load_idle_binary(proc_t *proc)
 {
     char* program = "\x90\x90\xeb\xfe";
 

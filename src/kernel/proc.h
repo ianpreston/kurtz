@@ -28,17 +28,15 @@ typedef struct struct_proc
 // Public interface
 void init_proc();
 proc_t* proc_spawn();
+void proc_load_binary(proc_t *proc, void *bin, uint32_t len);
 void proc_exit();
 void drop_to_usermode();
 void proc_switch_from(uint32_t eip, uint32_t esp);
 
-// Public interface (temporary)
-void load_helloworld_binary(proc_t *proc);
-void load_idle_binary(proc_t *proc);
-
 // Internal interface
 void proc_vmem_map(proc_t *proc);
 void proc_vmem_unmap(proc_t *proc);
+void proc_load_idle_binary(proc_t *proc);
 proc_t* proc_create(uint8_t pid);
 
 #endif

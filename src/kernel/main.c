@@ -85,13 +85,11 @@ int main(uint32_t magic, bootinfo_t *header)
     proc_t *first_proc = proc_spawn();
     proc_t *second_proc = proc_spawn();
 
-    printf("first_proc=%x\n", first_proc->pid);
-    printf("    cs_base=%x cs_p_addr=%x\n", first_proc->cs_base, first_proc->cs_p_addr);
-    printf("second_proc=%x\n", second_proc->pid);
-    printf("    cs_base=%x cs_p_addr=%x\n", second_proc->cs_base, second_proc->cs_p_addr);
+    ramfs_file_t *bin0 = ramfs_retr("initrd/helloworld.bin");
+    ramfs_file_t *bin1 = ramfs_retr("initrd/x3.bin");
 
-    load_helloworld_binary(first_proc);
-    load_helloworld_binary(second_proc);
+    proc_load_binary(first_proc, bin0->content, bin0->size);
+    proc_load_binary(second_proc, bin1->content, bin1->size);
 
     printf("\aDropping to user mode!\n\n");
     drop_to_usermode();
