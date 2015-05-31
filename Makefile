@@ -5,7 +5,7 @@ LINKER=ld
 CFLAGS=-Wall -Werror -pedantic -O0 -std=gnu99
 KFLAGS=-c -ffreestanding -m32
 
-C_SOURCES=libkernel.c gdt.c terminal.c keyboard.c interrupt.c paging.c kheap.c proc.c syscall.c initrd.c ramfs.c main.c
+C_SOURCES=libkernel.c gdt.c terminal.c keyboard.c interrupt.c paging.c kheap.c proc.c syscall.c initrd.c ramfs.c boot.c
 ASM_SOURCES=multiboot.asm gdt.asm isr.asm usermode.asm
 
 C_OBJECTS=$(C_SOURCES:%.c=build/%.o)
