@@ -29,7 +29,7 @@ proc_t* proc_spawn()
 
 proc_t* proc_create(uint8_t pid)
 {
-    proc_t *process = (proc_t*)kmalloc(sizeof(proc_t));
+    proc_t *process = kmalloc(sizeof(proc_t));
     process->pid = pid;
     process->next = NULL;
 

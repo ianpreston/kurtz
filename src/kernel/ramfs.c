@@ -8,12 +8,12 @@ static ramfs_node_t *top_node;
 
 void init_ramfs()
 {
-    ramfs_file_t *root_file = (ramfs_file_t*)kmalloc(sizeof(ramfs_file_t));
+    ramfs_file_t *root_file = kmalloc(sizeof(ramfs_file_t));
     root_file->filename = "<root>";
     root_file->size = 0;
     root_file->content = NULL;
 
-    root_node = (ramfs_node_t*)kmalloc(sizeof(ramfs_node_t));
+    root_node = kmalloc(sizeof(ramfs_node_t));
     root_node->file = root_file;
     root_node->next = NULL;
     top_node = root_node;
@@ -52,12 +52,12 @@ ramfs_file_t* ramfs_touch(char *filename)
         return NULL;
     }
 
-    ramfs_file_t *new_file = (ramfs_file_t*)kmalloc(sizeof(ramfs_file_t));
+    ramfs_file_t *new_file = kmalloc(sizeof(ramfs_file_t));
     new_file->filename = filename;
     new_file->size = 0;
     new_file->content = NULL;
 
-    ramfs_node_t *new_node = (ramfs_node_t*)kmalloc(sizeof(ramfs_node_t));
+    ramfs_node_t *new_node = kmalloc(sizeof(ramfs_node_t));
     new_node->file = new_file;
     new_node->next = NULL;
 
